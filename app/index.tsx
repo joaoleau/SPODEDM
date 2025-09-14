@@ -64,6 +64,7 @@ export default function Index() {
     { id: crypto.randomUUID(), value: "Sample Todo 2", done: true },
     { id: crypto.randomUUID(), value: "Sample Todo 3", done: false },
   ]);
+  const [filter, setFilter] = React.useState<'todos' | 'pendentes' | 'concluidos'>('todos'); //novo estado pra filtro
 
   const addTodo = (text: string) => {
     setTodos([...todos, { id: crypto.randomUUID(), value: text, done: false }]);
@@ -72,6 +73,13 @@ export default function Index() {
   const toggleTodo = (id: uuid) => {
     setTodos(todos.map(todo => todo.id === id ? { ...todo, done: !todo.done } : todo));
   };
+  //lista do todo filtrada
+  const filteredTodos = todos.filter(todo => {
+    if (filter === 'todos') return true;
+    if (filter === 'pendentes') return !todo.done;
+    if (filter === 'concluidos') return todo.done;
+    return true;
+  });
 
   return (
     <SafeAreaProvider>
@@ -80,10 +88,16 @@ export default function Index() {
           <Text style={{ fontSize: 32, fontWeight: "bold", marginTop: 20 }}>
             TODO List
           </Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+            <Button title="Todos" onPress={() => setFilter('todos')} color={filter === 'todos' ? 'green' : 'black'} />
+            <Button title="Pendentes" onPress={() => setFilter('pendentes')} color={filter === 'pendentes' ? 'green' : 'black'} />
+            <Button title="Concluídos" onPress={() => setFilter('concluidos')} color={filter === 'concluidos' ? 'green' : 'black'}/>
+          </View>
           <AddTodoForm addTodoHandler={addTodo} />
           <FlatList
             style={styles.list}
-            data={todos.sort((a, b) => a.done === b.done ? 0 : a.done ? 1 : -1)}
+            //substituindo pela filteredTodso
+            data={filteredTodos.sort((a, b) => a.done === b.done ? 0 : a.done ? 1 : -1)}
             renderItem={({ item }) => <ListItem todoItem={item} toggleTodo={toggleTodo} />}
           />
         </GestureHandlerRootView>
