@@ -55,4 +55,9 @@ export async function getAllTodos(db: SQLiteDatabase): Promise<TodoItem[]> {
     return result;
 }
 
-
+export async function updateTodoStatus(db: SQLiteDatabase, id: string, done: boolean): Promise<void> {
+    await db.runAsync(
+        'UPDATE todos SET done = ? WHERE id = ?',
+        [done ? 1 : 0, id]
+    );
+}
